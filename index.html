@@ -1,0 +1,124 @@
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
+</head>
+<style media="screen">
+  .line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 5px;
+  }
+
+  .area {
+  fill: lightsteelblue;
+}
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 60px;
+  height: 28px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+</style>
+<body>
+<script type="text/javascript">
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+
+// set the ranges
+var x = d3.scaleTime().range([0, width]);
+var y = d3.scaleLinear().range([height, 0]);
+
+
+// define the line
+var valueline = d3.line()
+    .curve(d3.curveBasis)
+    .x((d) => { return x(d[0]); })
+    .y((d) => { return y(d[1]); });
+
+    var div = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+// append the svg obgect to the body of the page
+// appends a 'group' element to 'svg'
+// moves the 'group' element to the top left margin
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+// Get the data
+d3.json("https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json", function(error, data) {
+  if (error) throw error;
+
+
+  // format the data
+  data = data.data;
+
+  data.forEach((d) => {
+    d[0] = new Date(d[0]);
+  });
+
+
+  console.log(data);
+
+  // Scale the range of the data
+  x.domain(d3.extent(data, function(d) { return d[0]; }));
+  y.domain([0, d3.max(data, function(d) { return d[1]; })]);
+
+  // Add the valueline path.
+  svg.append("path")
+      .data([data])
+      .attr("class", "line")
+      .style("stroke-dasharray", ("3, 3"))
+      .attr("d", valueline)
+      .on("mouseover", function(d) {
+        console.log(d[1][1]);
+       div.transition()
+         .duration(200)
+         .style("opacity", .9);
+       div.html(d[1][1])
+         .style("left", (d3.event.pageX) + "px")
+         .style("top", (d3.event.pageY - 28) + "px");
+       })
+     .on("mouseout", function(d) {
+       div.transition()
+         .duration(500)
+         .style("opacity", 0);
+       });;
+
+
+
+  // Add the X Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+
+  // Add the Y Axis
+  svg.append("g")
+      .call(d3.axisLeft(y));
+
+  svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left + 50)
+    .attr("x",0 - (height / 2))
+    .attr("dy", "1em")
+    .style("text-anchor", "middle")
+    .text("Gross Domestic Product");
+});
+
+
+
+</script>
+</body>
