@@ -1,0 +1,19 @@
+{
+  "name": "histogram",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "browser-sync start --server --files './index.html'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.18.8"
+  },
+  "dependencies": {
+    "browser-sync": "^2.18.8",
+    "d3": "^4.6.0"
+  }
+}
