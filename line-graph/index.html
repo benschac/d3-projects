@@ -59,45 +59,34 @@ var svg = d3.select("body").append("svg")
           "translate(" + margin.left + "," + margin.top + ")");
 
 // Get the data
-d3.json("https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json", function(error, data) {
+d3.json("https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json", (error, data) => {
   if (error) throw error;
-
 
   // format the data
   data = data.data;
-
   data.forEach((d) => {
     d[0] = new Date(d[0]);
   });
 
-
-  console.log(data);
-
   // Scale the range of the data
-  x.domain(d3.extent(data, function(d) { return d[0]; }));
-  y.domain([0, d3.max(data, function(d) { return d[1]; })]);
+  x.domain(d3.extent(data, (d) => d[0]));
+  y.domain([0, d3.max(data,(d) => d[1])]);
 
   // Add the valueline path.
+  console.log(data);
   svg.append("path")
       .data([data])
       .attr("class", "line")
       .style("stroke-dasharray", ("3, 3"))
       .attr("d", valueline)
-      .on("mouseover", function(d) {
-        console.log(d[1][1]);
+      .on("mouseover", function(d, i) {
        div.transition()
          .duration(200)
          .style("opacity", .9);
-       div.html(d[1][1])
+       div.html(d[0] + "<br/>" + d[1])
          .style("left", (d3.event.pageX) + "px")
          .style("top", (d3.event.pageY - 28) + "px");
-       })
-     .on("mouseout", function(d) {
-       div.transition()
-         .duration(500)
-         .style("opacity", 0);
-       });;
-
+       });
 
 
   // Add the X Axis
@@ -117,8 +106,6 @@ d3.json("https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
     .style("text-anchor", "middle")
     .text("Gross Domestic Product");
 });
-
-
 
 </script>
 </body>

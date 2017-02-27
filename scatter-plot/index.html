@@ -33,18 +33,46 @@
         display: block;
         margin: 0 auto;
       }
+
+      .grid line {
+        stroke: lightgrey;
+        stroke-opacity: 0.7;
+        shape-rendering: crispEdges;
+      }
+
+      .grid path {
+        stroke-width: 0;
+      }
     </style>
   </head>
   <body>
     <script type="text/javascript">
 
+    function secondsToMinutes(seconds) {
+      if(seconds < 10) {
+        return "0" + seconds;
+      }
+    }
 
-    const url = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json";
+
+    const url = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/cyclist-data.json";
 
     let margin = {top: 20, right: 20, left: 50, bottom: 50},
                 width = 960 - margin.right - margin.left,
                 height = 500 - margin.top - margin.bottom;
     // To-do kept returning null, used new Date();
+
+    // gridlines in x axis function
+      function make_x_gridlines() {
+          return d3.axisBottom(x)
+              .ticks(50)
+      }
+
+      // gridlines in y axis function
+      function make_y_gridlines() {
+          return d3.axisLeft(y)
+              .ticks(50)
+      }
 
     d3.select('body').append('h1')
       .text('USA GDP Over Time');
@@ -55,31 +83,45 @@
       .append('g')
       .attr('transform', 'translate('+ margin.left + ',' + margin.top + ')');
 
-    var x = d3.scaleTime().range([0, width]);
-    var y = d3.scaleLinear().range([height, 0]);
+    var x = d3.scaleTime().range([width, 0]);
+    var y = d3.scaleLinear().range([0, height]);
 
     // Scale Data.
-    d3.json( './data.json', (error, complete_data) => {
+    d3.json( url, (error, data) => {
       if(error) throw error;
-      let data = complete_data.data;
 
       // Format Date so domain can map & scale input values to svg.
-      data.forEach(el => el[0] = new Date(el[0]));
-
-      x.domain(d3.extent(data, (d) => d[0]));
-      y.domain([0, d3.max(data,(d) => d[1])]);
+      var fastest = d3.min(data, (d) => d.Seconds);
+      console.log(fastest);
+      x.domain(d3.extent(data, (d, i) =>  (((d.Seconds - fastest) + 5) * 100)));
+      y.domain([0, d3.max(data,(d) => d.Place)]);
 
       svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x).ticks(15));
+
+      svg.append('g')
+      .attr("class", "grid")
+      .attr("transform", "translate(0," + height + ")")
+      .call(make_x_gridlines()
+          .tickSize(-height)
+          .tickFormat("")
+      )
+
+      svg.append("g")
+      .attr("class", "grid")
+      .call(make_y_gridlines()
+          .tickSize(-width)
+          .tickFormat("")
+      )
 
       svg.append("g")
       .call(d3.axisLeft(y));
 
-      let bar = svg.selectAll('.bar')
+      let bar = svg.selectAll('.dot')
         .data(data).enter()
-        .append('rect')
-        .attr('class', 'bar')
+        .append('circle')
+        .attr('class', 'dot')
         .attr('x', d => x(d[0]))
         .attr('y', d => y(d[1]))
         .attr('width', width / data.length)
@@ -102,11 +144,7 @@
     .attr("x",0 - (height / 2))
     .attr("dy", "1em")
     .style("text-anchor", "middle")
-    .text("Gross Domestic Product in Billions");
-
-
-
-
+    .text("Ranking");
 
     let div = d3.select("body").append("div")
     .attr("class", "tool-tip")
