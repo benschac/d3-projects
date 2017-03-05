@@ -22,4 +22,4 @@ This project is a Visual representation of the USA's GDP with a mouseover hover 
 
 
 ### GDP of the USA Line Graph
-![image of line graph](./linegraphGDP.pngs)
+![image of line graph](./linegraphGDP.png)
