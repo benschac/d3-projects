@@ -15,7 +15,11 @@ This project is a Visual representation of the USA's GDP with a mouseover hover 
 ### Histogram Graph (In progress)
 This project is a Visual representation of the USA's GDP with a mouseover hover state (which is still in progress).
 
+# Projects
+
+### GDP of the USA Histogram
+![gif of instagram](http://g.recordit.co/Ek03gzPxnP.gif)
 
 
-
-
+### GDP of the USA Line Graph
+![image of line graph](http://g.recordit.co/Ek03gzPxnP.gif)
